@@ -1,0 +1,7 @@
+name: LodiaService
+version: '1.0-SNAPSHOT'
+main: net.lodia.service.LodiaService
+api-version: '1.21'
+load: POSTWORLD
+authors: [offup]
+website: https://github.com/offup

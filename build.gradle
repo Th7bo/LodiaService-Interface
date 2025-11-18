@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0'
+}
+
+group = 'net.lodia'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-snapshots"
+        url = "https://repo.papermc.io/repository/maven-snapshots/"
+    }
+    maven {
+        name = "papermc"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "minecraft-libraries"
+        url = "https://libraries.minecraft.net/"
+    }
+    maven {
+        name = "placeholderapi"
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+    compileOnly("net.luckperms:api:5.4")
+    implementation("fr.mrmicky:fastboard:2.1.5")
+    implementation("org.jetbrains:annotations:26.0.2")
+    implementation("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+}
+
+shadowJar {
+    relocate 'fr.mrmicky.fastboard', 'net.lodia.fastboard'
+}
+
+tasks.register('buildJar') {
+    dependsOn('clean', 'shadowJar')
+}
