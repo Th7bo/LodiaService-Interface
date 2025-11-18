@@ -9,9 +9,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public record PlayerQuitListener(LodiaService service) implements Listener {
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        var player = e.getPlayer();
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        event.quitMessage(null);
+
+        var player = event.getPlayer();
+
         service.pipelineHandler(player, PipelineMode.SAVE);
     }
-
 }
