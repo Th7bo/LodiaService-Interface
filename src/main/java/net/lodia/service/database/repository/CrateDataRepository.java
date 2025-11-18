@@ -3,6 +3,7 @@ package net.lodia.service.database.repository;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lodia.service.LodiaService;
+import net.lodia.service.database.DataRepository;
 import net.lodia.service.database.data.CratesData;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,7 @@ import java.util.logging.Level;
 
 @Getter
 @Accessors(fluent = true)
-public class CrateDataRepository {
+public class CrateDataRepository implements DataRepository<CratesData> {
 
     private final Map<UUID, CratesData> cache = new ConcurrentHashMap<>();
     private final LodiaService service;
@@ -25,6 +26,7 @@ public class CrateDataRepository {
         this.service = service;
     }
 
+    @Override
     public CratesData load(Player player) {
         UUID uuid = player.getUniqueId();
 
@@ -36,14 +38,14 @@ public class CrateDataRepository {
             CratesData data;
             if (rs.next()) {
                 data = new CratesData();
-                data.uuid = uuid;
+                data.uuid(uuid);
                 data.addAllCreate(rs.getInt("allCrate"));
                 data.addBasicCreate(rs.getInt("basicCrate"));
                 data.addRareCreate(rs.getInt("rareCrate"));
                 data.addUltraCreate(rs.getInt("ultraCrate"));
             } else {
                 data = new CratesData();
-                data.uuid = uuid;
+                data.uuid(uuid);
                 save(data);
             }
 
@@ -56,6 +58,7 @@ public class CrateDataRepository {
         }
     }
 
+    @Override
     public void save(CratesData data) {
         try (PreparedStatement stmt = service.databaseHandler().connection().prepareStatement(
                 "REPLACE INTO crates_data (uuid, allCrate, basicCrate, rareCrate, ultraCrate) VALUES (?, ?, ?, ?, ?)")) {
@@ -68,6 +71,11 @@ public class CrateDataRepository {
         } catch (SQLException e) {
             logError("Failed to save crates data", e);
         }
+    }
+
+    @Override
+    public Map<UUID, CratesData> cache() {
+        return cache;
     }
 
     private void logError(String message, Exception e) {

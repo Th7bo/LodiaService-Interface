@@ -14,6 +14,6 @@ public record PlayerQuitListener(LodiaService service) implements Listener {
 
         var player = event.getPlayer();
 
-        service.pipelineHandler(player, PipelineMode.SAVE);
+        service.pipelineHandler(player, PipelineMode.QUIT_SAVE);
     }
 }

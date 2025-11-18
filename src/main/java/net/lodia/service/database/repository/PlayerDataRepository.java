@@ -3,6 +3,7 @@ package net.lodia.service.database.repository;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.lodia.service.LodiaService;
+import net.lodia.service.database.DataRepository;
 import net.lodia.service.database.data.PlayerData;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,7 @@ import java.util.logging.Level;
 
 @Getter
 @Accessors(fluent = true)
-public class PlayerDataRepository {
+public class PlayerDataRepository implements DataRepository<PlayerData> {
 
     private final Map<UUID, PlayerData> cache = new ConcurrentHashMap<>();
     private final LodiaService service;
@@ -25,6 +26,7 @@ public class PlayerDataRepository {
         this.service = service;
     }
 
+    @Override
     public PlayerData load(Player player) {
         UUID uuid = player.getUniqueId();
 
@@ -36,7 +38,7 @@ public class PlayerDataRepository {
             PlayerData data;
             if (rs.next()) {
                 data = new PlayerData();
-                data.uuid = uuid;
+                data.uuid(uuid);
                 data.name = rs.getString("name");
                 data.addMoney(rs.getInt("money"));
                 data.addCredits(rs.getInt("credits"));
@@ -45,7 +47,7 @@ public class PlayerDataRepository {
                 data.addPlaytime(rs.getInt("playtime"));
             } else {
                 data = new PlayerData();
-                data.uuid = uuid;
+                data.uuid(uuid);
                 data.name = player.getName();
                 save(data);
             }
@@ -68,7 +70,8 @@ public class PlayerDataRepository {
             if (!rs.next()) return null;
 
             PlayerData data = new PlayerData();
-            data.uuid = UUID.fromString(rs.getString("uuid"));
+            UUID dataUuid = UUID.fromString(rs.getString("uuid"));
+            data.uuid(dataUuid);
             data.name = rs.getString("name");
             data.addMoney(rs.getInt("money"));
             data.addCredits(rs.getInt("credits"));
@@ -76,7 +79,7 @@ public class PlayerDataRepository {
             data.addDeaths(rs.getInt("deaths"));
             data.addPlaytime(rs.getInt("playtime"));
 
-            cache.put(data.uuid, data);
+            cache.put(dataUuid, data);
             return data;
 
         } catch (SQLException e) {
@@ -85,6 +88,12 @@ public class PlayerDataRepository {
         }
     }
 
+    @Override
+    public Map<UUID, PlayerData> cache() {
+        return cache;
+    }
+
+    @Override
     public void save(PlayerData data) {
         try (PreparedStatement stmt = service.databaseHandler().connection().prepareStatement(
                 "REPLACE INTO player_data (uuid, name, money, credits, kills, deaths, playtime) VALUES (?, ?, ?, ?, ?, ?, ?)")) {

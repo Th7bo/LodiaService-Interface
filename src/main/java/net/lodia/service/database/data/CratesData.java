@@ -2,14 +2,12 @@ package net.lodia.service.database.data;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-
-import java.util.UUID;
+import net.lodia.service.database.PlayerDataObject;
 
 @Getter
 @Accessors(fluent = true)
-public class CratesData {
+public class CratesData extends PlayerDataObject {
 
-    public UUID uuid;
     private int allCreate;
     private int basicCreate;
     private int rareCrate;
