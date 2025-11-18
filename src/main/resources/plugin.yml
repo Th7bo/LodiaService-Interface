@@ -5,3 +5,6 @@ api-version: '1.21'
 load: POSTWORLD
 authors: [offup]
 website: https://github.com/offup
+
+commands:
+  spawn:

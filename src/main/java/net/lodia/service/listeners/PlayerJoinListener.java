@@ -4,7 +4,7 @@ import net.lodia.service.LodiaService;
 import net.lodia.service.enums.Locations;
 import net.lodia.service.enums.PipelineMode;
 
-import org.bukkit.Sound;
+import net.lodia.service.enums.Sounds;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -33,6 +33,6 @@ public record PlayerJoinListener(LodiaService service) implements Listener {
             return;
         }
 
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        player.playSound(player, Sounds.SUCCESS.sound(), 1, 2);
     }
 }

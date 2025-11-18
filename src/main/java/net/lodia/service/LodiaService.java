@@ -2,6 +2,9 @@ package net.lodia.service;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.lodia.service.api.CombatAPI;
+import net.lodia.service.api.TeleportAPI;
+import net.lodia.service.commands.SpawnCommand;
 import net.lodia.service.database.DataSaveHandler;
 import net.lodia.service.database.DatabaseHandler;
 import net.lodia.service.database.repository.CrateDataRepository;
@@ -24,11 +27,17 @@ public final class LodiaService extends JavaPlugin {
     @Accessors(fluent = true)
     private static LodiaService service;
 
+    private final String prefix = "<dark_gray>[<#FC004D>Lodia<dark_gray>] <gray>";
+    private final String mainColor = "<#FC004D>";
+
     private DatabaseHandler databaseHandler;
     private DataSaveHandler dataSaveHandler;
 
     private PlayerDataRepository playerDataRepository;
     private CrateDataRepository crateDataRepository;
+
+    private TeleportAPI teleportAPI;
+    private CombatAPI combatAPI;
 
     @Override
     public void onEnable() {
@@ -40,8 +49,12 @@ public final class LodiaService extends JavaPlugin {
         playerDataRepository = new PlayerDataRepository(this);
         crateDataRepository = new CrateDataRepository(this);
 
+        teleportAPI = new TeleportAPI(this);
+        combatAPI = new CombatAPI(this);
+
         loadWorlds();
         registerListeners();
+        registerCommands();
     }
 
     @Override
@@ -92,10 +105,15 @@ public final class LodiaService extends JavaPlugin {
         ).join();
     }
     private void loadWorlds() {}
+
     private void registerListeners() {
         var pm = getServer().getPluginManager();
 
         pm.registerEvents(new PlayerJoinListener(this), this);
         pm.registerEvents(new PlayerQuitListener(this), this);
+    }
+    private void registerCommands() {
+
+        registerCommand("spawn", new SpawnCommand());
     }
 }
